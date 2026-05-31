@@ -1,0 +1,33 @@
+name: apktwsign
+
+on:
+  schedule:
+    - cron: "0 16 * * *"  # 台灣 00:00
+    - cron: "0 4 * * *"   # 台灣 12:00
+  workflow_dispatch:
+
+concurrency:
+  group: apktwsign
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run APK.TW sign script
+        env:
+          APK_COOKIE: ${{ secrets.APK_COOKIE }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: python main.py
