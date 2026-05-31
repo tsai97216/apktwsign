@@ -6,10 +6,6 @@ on:
     - cron: "0 4 * * *"   # 台灣 12:00
   workflow_dispatch:
 
-concurrency:
-  group: apktwsign
-  cancel-in-progress: true
-
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -26,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run APK.TW sign script
+      - name: Run script
         env:
           APK_COOKIE: ${{ secrets.APK_COOKIE }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
