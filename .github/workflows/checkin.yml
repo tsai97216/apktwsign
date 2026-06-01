@@ -1,10 +1,7 @@
 name: apktwsign
 
 on:
-  schedule:
-    - cron: "0 16 * * *"  # 台灣 00:00
-    - cron: "0 4 * * *"   # 台灣 12:00
-  workflow_dispatch:
+  workflow_dispatch
 
 jobs:
   run:
