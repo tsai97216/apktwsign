@@ -28,21 +28,33 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run script
+        id: checkin
+        continue-on-error: true
         env:
           APK_COOKIE: ${{ secrets.APK_COOKIE }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: python main.py
+        run: |
+          python main.py | tee result.txt
 
       - name: Update activity
         run: |
-          echo "# GitHub Actions Activity" > activity.md
+          RESULT=$(grep "RESULT=" result.txt | sed 's/RESULT=//')
+
+          echo "# APK.TW Check-in Activity" > activity.md
           echo "" >> activity.md
           echo "Last run: $(TZ='Asia/Taipei' date '+%Y-%m-%d %H:%M:%S')" >> activity.md
+          echo "" >> activity.md
+          echo "Result: $RESULT" >> activity.md
 
       - name: Commit activity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add activity.md
           git commit -m "chore: update activity" || exit 0
           git push
+
+      - name: Fail workflow if check-in failed
+        if: steps.checkin.outcome == 'failure'
+        run: exit 1
