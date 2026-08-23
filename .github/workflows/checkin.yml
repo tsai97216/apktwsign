@@ -39,20 +39,29 @@ jobs:
       - name: Update activity
         run: |
           RESULT=$(grep "RESULT=" result.txt | sed 's/RESULT=//')
+          TIME=$(TZ='Asia/Taipei' date '+%Y-%m-%d %H:%M:%S')
 
           echo "# APK.TW Check-in Activity" > activity.md
           echo "" >> activity.md
-          echo "Last run: $(TZ='Asia/Taipei' date '+%Y-%m-%d %H:%M:%S')" >> activity.md
+          echo "Last run: $TIME" >> activity.md
           echo "" >> activity.md
           echo "Result: $RESULT" >> activity.md
 
-      - name: Commit activity
+          echo "# APK.TW 自動簽到" > README.md
+          echo "" >> README.md
+          echo "| 帳號 | 上次簽到時間 | 簽到結果 |" >> README.md
+          echo "| --- | --- | --- |" >> README.md
+          echo "| APK.TW 帳號 | $TIME | $RESULT |" >> README.md
+          echo "" >> README.md
+          echo "> 此頁面由 GitHub Actions 自動更新。" >> README.md
+
+      - name: Commit activity and README
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add activity.md
-          git commit -m "chore: update activity" || exit 0
+          git add activity.md README.md
+          git commit -m "chore: update check-in status" || exit 0
           git push
 
       - name: Fail workflow if check-in failed
